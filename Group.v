@@ -6,6 +6,7 @@ Reserved Notation "x * y" (at level 40, left associativity).
 Class group_binop (G : Type) := group_op : G -> G -> G.
 Infix "*" := group_op: group_scope.
 
+(* TODO this needs to restrict to equivalence relations *)
 Reserved Notation "x == y" (at level 70).
 Class group_eq_rel (G : Type) := group_eq : G -> G -> Prop.
 Infix "==" := group_eq: group_scope.
