@@ -163,8 +163,8 @@ Proof.
   assumption.
 Qed.
 
-Global Program Instance Versor_is_Group : PredicateGroup Quaternion Qmul Versor eq := {
-    id        := Q1
+Global Program Instance Versor_is_Group : PredicateGroup Quaternion Qmul Versor eq eq_equiv := {
+    id        := Q1 
   ; inverse   := Qinv
   ; id_left   := Versor_id_left
   ; id_right  := Versor_id_right
