@@ -156,7 +156,7 @@ Qed.
 Inductive Versor: Quaternion -> Prop := 
   | unit: forall x, Qnorm x = 1 -> Versor x.
 
-(* extend the Quaternion group proofs to Versors, mostly trivial except for inverse *)
+(* extend the Quaternion group proofs to Versors, and show the group action maintains the predicate *)
 
 Lemma Versor_id_left: forall x : Quaternion, Versor x -> Q1 ** x = x.
 Proof. intros. apply Q_id_left. Qed.  
