@@ -230,9 +230,13 @@ Proof.
   reflexivity.
 Qed.    
 
-#[export] Instance Versor_is_Group : PredicateGroup Quaternion Qmul Versor eq eq_equiv := {
+#[export] Instance Versor_is_Group : PredicateGroup := {
     id             := Q1 
   ; inverse        := Qinv
+  ; op             := Qmul
+  ; pred           := Versor
+  ; rel            := eq
+  ; equiv          := eq_equiv
   ; id_left        := Versor_id_left
   ; id_right       := Versor_id_right
   ; assoc          := Versor_assoc
