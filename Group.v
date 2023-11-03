@@ -28,4 +28,6 @@ Class PredicateGroup (G: Type) (op: group_binop G) (pred: G -> Prop) (group_eq: 
       ; id_right: forall x, pred x -> x * id == x
       ; assoc: forall x y z, pred x -> pred y -> pred z -> (x * y) * z == x * (y * z)
       ; right_inv: forall x, pred x -> x * (inverse x) == id
+      ; op_closed: forall x y, pred x -> pred y -> pred (x * y)
+      ; inverse_closed: forall x, pred x -> pred (inverse x)
 }.

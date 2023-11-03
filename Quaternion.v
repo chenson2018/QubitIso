@@ -81,6 +81,23 @@ Lemma pow_eq: forall x y n, x = y -> x^n = y^n. Proof. intros. subst. lra. Qed.
 Lemma Rdiv_diag: forall x, x <> 0 -> x / x = 1.
 Proof. now unfold Rdiv; intros r H; rewrite Rinv_r. Qed.
 
+Lemma pow2_distr: forall x y, (x * y)^2 = x^2 * y^2. Proof. intros. lra. Qed.
+
+Lemma times_self: forall x, x * x = x^2. Proof. intros. lra. Qed.
+
+Lemma sqrt_mul_rev: forall z1 z2 z3, 
+  0 <= z1 -> 
+  0 <= z2 -> 
+  z1 * z2 = z3 -> 
+  sqrt z1 * sqrt z2 = sqrt z3.
+Proof.
+  intros. 
+  rewrite <- H1.
+  rewrite sqrt_mult.
+  reflexivity.
+  all: assumption.
+Qed.
+
 (* Proofs in the Quaternions of group properties *)
 
 Lemma Q_assoc: forall (x y z: Quaternion), (x ** y) ** z = x ** (y ** z).
@@ -163,11 +180,63 @@ Proof.
   assumption.
 Qed.
 
-Global Program Instance Versor_is_Group : PredicateGroup Quaternion Qmul Versor eq eq_equiv := {
-    id        := Q1 
-  ; inverse   := Qinv
-  ; id_left   := Versor_id_left
-  ; id_right  := Versor_id_right
-  ; assoc     := Versor_assoc
-  ; right_inv := Versor_right_inv
+Lemma Qnorm_distr: forall x y, (Qnorm x) * (Qnorm y) = Qnorm (x ** y).
+  intros.
+  destruct x as (((a1, b1), c1), d1).
+  destruct y as (((a2, b2), c2), d2).
+  simpl.
+  repeat rewrite Rmult_1_r.
+  remember (a1 * a1 + _ + _ +  _) as z1.
+  remember (a2 * a2 + _ + _ +  _) as z2.
+  remember ((a1 * a2 - _ - _ - _) * _ + _ + _ + _) as z3.
+  assert (H': z1 * z2 = z3).
+  { subst. lra. } 
+  assert (le_z1_z2: 0 <= z1 /\ 0 <= z2).
+  {
+    split; subst; repeat apply Rplus_le_le_0_compat.
+    all: rewrite times_self.
+    all: apply pow2_ge_0.
+  }
+  destruct le_z1_z2.
+  apply sqrt_mul_rev; assumption.
+Qed.
+
+Lemma Versor_op_closed: forall x y : Quaternion, Versor x -> Versor y -> Versor (x ** y).
+Proof.
+  intros.
+  destruct H.
+  destruct H0.
+  constructor.
+  rewrite <- Qnorm_distr.
+  rewrite H, H0.
+  lra.
+Qed.
+
+Lemma Versor_inverse_closed: forall x : Quaternion, Versor x -> Versor (Qinv x).
+Proof.
+  intros.
+  constructor.
+  destruct H.
+  destruct x as (((a, b), c), d).
+  unfold Qinv, Qconj.
+  rewrite H.
+  replace (1 / 1 ^ 2) with 1 by lra.
+  rewrite scalar_q.
+  repeat rewrite Rmult_1_l.
+  rewrite <- H.
+  simpl.
+  repeat rewrite Rmult_1_r.
+  repeat rewrite Rmult_opp_opp.
+  reflexivity.
+Qed.    
+
+#[export] Instance Versor_is_Group : PredicateGroup Quaternion Qmul Versor eq eq_equiv := {
+    id             := Q1 
+  ; inverse        := Qinv
+  ; id_left        := Versor_id_left
+  ; id_right       := Versor_id_right
+  ; assoc          := Versor_assoc
+  ; right_inv      := Versor_right_inv
+  ; op_closed      := Versor_op_closed
+  ; inverse_closed := Versor_inverse_closed
 }.
