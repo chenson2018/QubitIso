@@ -1,4 +1,4 @@
-Require Export Reals.
+Require Import Reals.
 Require Import Psatz.
 Require Import QubitIso.Group.
 
@@ -13,6 +13,20 @@ Definition Q1 := (1, 0, 0, 0).
 Definition QI := (0, 1, 0, 0).
 Definition QJ := (0, 0, 1, 0).
 Definition QK := (0, 0, 0, 1).
+
+(* functions to get basis coefficients *)
+
+Definition basis_r (q: Quaternion): R.
+Proof. destruct q as (((r, i), j), k). apply r. Defined.
+
+Definition basis_i (q: Quaternion): R.
+Proof. destruct q as (((r, i), j), k). apply i. Defined.
+
+Definition basis_j (q: Quaternion): R.
+Proof. destruct q as (((r, i), j), k). apply j. Defined.
+
+Definition basis_k (q: Quaternion): R.
+Proof. destruct q as (((r, i), j), k). apply k. Defined.
 
 (* notation for Quaternion multiplication *)
 
@@ -236,7 +250,7 @@ Qed.
   ; op             := Qmul
   ; pred           := Versor
   ; rel            := eq
-  ; equiv          := eq_equiv
+  ; rel_equiv      := eq_equiv
   ; id_left        := Versor_id_left
   ; id_right       := Versor_id_right
   ; assoc          := Versor_assoc
