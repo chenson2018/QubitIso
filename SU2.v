@@ -111,7 +111,7 @@ Proof.
 Qed.
 
 #[export] Instance SU2_is_Group : PredicateGroup := {
-    id := I 2
+    id             := I 2
   ; inverse        := adjoint
   ; pred           := SU2
   ; op             := @Mmult 2 2 2
