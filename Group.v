@@ -36,7 +36,29 @@ Class PredicateGroup {G: Type}: Type := {
       ; inverse_closed {x}: pred x -> pred (inverse x)
 }.
 
-(* TODO make isomorphism depend on homomorphism *)
+(* TODO still having trouble inferring the operations *)
+
+Class GroupHomomorphism
+  {G H: Type} 
+  {Gop: group_binop G}
+  {Hop: group_binop H}
+  {Grel: group_eq_rel G}
+  {Hrel: group_eq_rel H}
+: Type 
+:= {
+    hom_left_group: @PredicateGroup G
+  ; hom_right_group: @PredicateGroup H
+  ; hom_f: G -> H
+  ; hom_mul {a b}:
+      hom_left_group.(pred) a ->
+      hom_left_group.(pred) b ->
+      hom_f (a • b) •= hom_f a • hom_f b
+  ; hom_f_closed {g}: 
+      hom_left_group.(pred) g -> 
+      hom_right_group.(pred) (hom_f g)
+}.
+
+(* TODO reorganizing so that we don't have to access inside hom could make this more readable *)
 
 Class GroupIsomorphism
   {G H: Type} 
@@ -44,22 +66,17 @@ Class GroupIsomorphism
   {Hop: group_binop H}
   {Grel: group_eq_rel G}
   {Hrel: group_eq_rel H}
-  {Heq: equiv H Hrel}
 : Type 
 := {
-    iso_left_group: @PredicateGroup G
-  ; iso_right_group: @PredicateGroup H
-  ; iso_f: G -> H
-  ; iso_mul {a b}:
-      iso_left_group.(pred) a ->
-      iso_left_group.(pred) b ->
-      iso_f (a • b) •= iso_f a • iso_f b
-  ; iso_f_closed {g}: 
-      iso_left_group.(pred) g -> 
-      iso_right_group.(pred) (iso_f g)
-  ; iso_bijection {x x'}: 
-      iso_left_group.(pred) x  ->
-      iso_left_group.(pred) x' ->
-      iso_f x •= iso_f x' -> x •= x'
+    hom: @GroupHomomorphism G H _ _ _ _
+  ; iso_f_inv: H -> G
+  ; iso_left_inv {g: G}: 
+      hom.(hom_left_group).(pred) g ->
+      iso_f_inv (hom.(hom_f) g) •= g
+  ; iso_right_inv {h: H}: 
+      hom.(hom_right_group).(pred) h ->
+      hom.(hom_f) (iso_f_inv h)  •= h 
+  ; iso_f_inv_closed {h: H}:
+      hom.(hom_right_group).(pred) h ->
+      hom.(hom_left_group).(pred) (iso_f_inv h)
 }.
-
