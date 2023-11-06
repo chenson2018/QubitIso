@@ -2,6 +2,30 @@ Require Import QuantumLib.Matrix.
 Require Import Relations.
 Require Import Setoid.
 
+(* some definitions used for SU(2) and SO(3) *)
+
+(* while AB = I -> BA = I, this is much easier in a definition *)
+
+Definition Unitary {n} (U: Matrix n n): Prop := 
+  U × (U) † ≡ I n /\ (U) † × U ≡ I n.
+
+Local Open Scope nat_scope.
+Definition d2_det (A: Matrix 2 2) : C := (A 0 0) * (A 1 1) - (A 1 0) * (A 0 1).
+
+Definition d3_det (A: Matrix 3 3) : C := 
+  let a := A 0 0 in
+  let b := A 0 1 in
+  let c := A 0 2 in
+  let d := A 1 0 in
+  let e := A 1 1 in
+  let f := A 1 2 in
+  let g := A 2 0 in
+  let h := A 2 1 in
+  let i := A 2 2 in
+  a*e*i + b*f*g + c*d*h - c*e*g - b*d*i - a*f*h
+.
+Local Close Scope nat_scope.
+
 (* setoid rewriting, mostly from https://rand.cs.uchicago.edu/vqc/Matrix.html *)
 
 Lemma mat_equiv_refl: forall m n, reflexive (Matrix m n) mat_equiv.

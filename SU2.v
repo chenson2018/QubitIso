@@ -3,15 +3,6 @@ Require Import QuantumLib.Matrix.
 Require Import QubitIso.MatrixAux.
 Require Import QubitIso.Group.
 
-(* while AB = I -> BA = I, this is much easier in a definition *)
-
-Definition Unitary {n} (U: Matrix n n): Prop := 
-  U × (U) † ≡ I n /\ (U) † × U ≡ I n.
-
-Local Open Scope nat_scope.
-Definition d2_det (A: Matrix 2 2) : C := (A 0 0) * (A 1 1) - (A 1 0) * (A 0 1).
-Local Close Scope nat_scope.
-
 Inductive SU2: (Matrix 2 2) -> Prop :=
   | su2_con {U}: 
       WF_Matrix U -> 
@@ -64,7 +55,6 @@ Proof.
   - unfold Unitary in *.
     rewrite Mmult_adjoint.
     split.
-
     + replace (A' × B' × ((B') † × (A') †))
       with    (A' × (B' × (B') †) × (A') †) by lma.
       rewrite Uni_B_r.
