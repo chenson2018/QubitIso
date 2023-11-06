@@ -4,8 +4,6 @@ Require Import QubitIso.Group.
 Require Import QubitIso.MatrixAux.
 Require Import QuantumLib.Matrix.
 
-(* TODO decide if the other way would be easier, and prove isomorphism is an equivalence relation *)
-
 Definition f (q: Quaternion): Matrix 2 2 := 
   match q with
   | (x, y, z, w) => 
@@ -137,19 +135,57 @@ Qed.
   ; hom_f_closed    := Versor_SU2_hom_f_closed
 }.
 
-Definition f_inv (U: Matrix 2 2) : Quaternion. Admitted.
+Local Open Scope nat_scope.
+Definition f_inv (U: Matrix 2 2) : Quaternion :=
+  (Re (U 0 0), Im (U 0 0), Re (U 0 1), Im (U 0 1)).
+Local Close Scope nat_scope.
 
 Lemma SU2_Versor_iso_left_inv: forall q, Versor q -> f_inv (f q) = q.
 Proof.
-Admitted.
+  intros.
+  destruct q as (((a, b), c), d). 
+  unfold f, f_inv, Re, Im.
+  simpl.
+  reflexivity.
+Qed.  
+
+Lemma SU2_generator_a: forall U, SU2 U -> (U 0%nat 0%nat) = Cconj (U 1%nat 1%nat).
+Proof. Admitted.  
+
+Lemma SU2_generator_b: forall U, SU2 U -> (U 0%nat 1%nat) = - Cconj (U 1%nat 0%nat).
+Proof. Admitted.
 
 Lemma SU2_Versor_iso_right_inv: forall U, SU2 U -> f (f_inv U) == U.
 Proof.
-Admitted.
+  intros.
+  by_cell; unfold Re, Im.
+  - lca.
+  - lca.
+  - rewrite SU2_generator_b. lca. assumption.
+  - rewrite SU2_generator_a. lca. assumption.
+Qed.
 
 Lemma SU2_Versor_iso_f_inv_closed: forall U, SU2 U -> Versor (f_inv U).
 Proof.
-Admitted.  
+  intros.
+  remember H as H'.
+  destruct H as [U' WF_U [Uni_U_r Uni_U_l] Uni_norm].
+  constructor.
+  unfold f_inv, Qnorm.
+  unfold d2_det in Uni_norm.
+  apply sqrt_lem_1.
+  - repeat apply Rplus_le_le_0_compat.
+    all: apply pow2_ge_0.
+  - lra.
+  - replace ((1 * 1)%R) with 1%R by lra.
+    apply RtoC_inj.
+    rewrite <- Uni_norm.
+    rewrite SU2_generator_a.
+    rewrite SU2_generator_b.
+    unfold Re, Im, Cconj.
+    simpl. lca.
+    all: assumption.
+Qed.    
 
 #[export] Instance SU2_Isomorphism_Versor:
   @GroupIsomorphism
