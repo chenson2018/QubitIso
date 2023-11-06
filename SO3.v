@@ -43,8 +43,6 @@ Qed.
 Lemma SO3_right_inv: forall U, SO3 U -> U × (U †) == (I 3).
 Proof. intros. destruct H as [U' _ [rinv _] _ _]. assumption. Qed.
 
-Search ((_ * 0)%R).
-
 Lemma SO3_op_closed: forall A B,
   SO3 A ->
   SO3 B ->
@@ -97,8 +95,6 @@ Proof.
   unfold adjoint, d3_det.
   lca.
 Qed.  
-
-Search ((- 0)%R).
 
 Lemma SO3_inverse_closed: forall A, SO3 A -> SO3 (A †).
 Proof.
