@@ -9,6 +9,8 @@ Require Import Setoid.
 Definition Unitary {n} (U: Matrix n n): Prop := 
   U × (U) † ≡ I n /\ (U) † × U ≡ I n.
 
+(* determinants for 2x2 and 3x3 matrices *)
+
 Local Open Scope nat_scope.
 Definition d2_det (A: Matrix 2 2) : C := (A 0 0) * (A 1 1) - (A 1 0) * (A 0 1).
 
@@ -25,6 +27,13 @@ Definition d3_det (A: Matrix 3 3) : C :=
   a*e*i + b*f*g + c*d*h - c*e*g - b*d*i - a*f*h
 .
 Local Close Scope nat_scope.
+
+Lemma d2_det_adjoint: forall (A: Matrix 2 2), d2_det (A †) = Cconj (d2_det A).
+Proof.
+  intros.
+  unfold adjoint, d2_det.
+  lca.
+Qed.  
 
 (* setoid rewriting, mostly from https://rand.cs.uchicago.edu/vqc/Matrix.html *)
 

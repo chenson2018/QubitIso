@@ -1,32 +1,19 @@
 Require Import Reals.
 Require Import Psatz.
 Require Import QubitIso.Group.
+Require Import Coq.Init.Specif.
+
+Open Scope R_scope.
 
 Definition Quaternion := (R * R * R * R)%type.
 
 (* useful to have definitions for zero and the basis elements *)
-
-Open Scope R_scope.
 
 Definition Q0 := (0, 0, 0, 0).
 Definition Q1 := (1, 0, 0, 0).
 Definition QI := (0, 1, 0, 0).
 Definition QJ := (0, 0, 1, 0).
 Definition QK := (0, 0, 0, 1).
-
-(* functions to get basis coefficients *)
-
-Definition basis_r (q: Quaternion): R.
-Proof. destruct q as (((r, i), j), k). apply r. Defined.
-
-Definition basis_i (q: Quaternion): R.
-Proof. destruct q as (((r, i), j), k). apply i. Defined.
-
-Definition basis_j (q: Quaternion): R.
-Proof. destruct q as (((r, i), j), k). apply j. Defined.
-
-Definition basis_k (q: Quaternion): R.
-Proof. destruct q as (((r, i), j), k). apply k. Defined.
 
 (* notation for Quaternion multiplication *)
 
@@ -112,87 +99,7 @@ Proof.
   all: assumption.
 Qed.
 
-(* Proofs in the Quaternions of group properties *)
-
-Lemma Q_assoc: forall (x y z: Quaternion), (x ** y) ** z = x ** (y ** z).
-Proof.
-  intros.
-  destruct x as (((a1, b1), c1), d1).
-  destruct y as (((a2, b2), c2), d2).
-  destruct z as (((a3, b3), c3), d3).
-  simpl.
-  f_equal.
-  f_equal.
-  f_equal.
-  all: lra.
-Qed.
-
-Lemma Q_right_inv: forall x, (Qnorm x)^2 <> 0 -> x ** (Qinv x) = Q1.
-Proof.
-  unfold Q0, Q1, Qinv.
-  intros.
-  destruct x as (((a, b), c), d).
-  rewrite norm_squared.
-  unfold Qconj.
-  rewrite scalar_q.
-  remember (a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2) as n2.
-  simpl.
-  repeat f_equal; try lra.
-  replace (_ - _ - _ - _) with (a^2 / n2 + b^2 / n2 + c^2 / n2 + d^2 / n2).
-  - repeat (rewrite <- Rdiv_plus_distr).
-    subst.
-    rewrite norm_squared in H.
-    apply Rdiv_diag.
-    assumption.
-  - lra.
-Qed.
-
-Lemma Q_id_left: forall x, Q1 ** x = x.
-Proof.
-  intros.
-  unfold Q1.
-  destruct x as (((a, b), c), d).
-  simpl.
-  repeat f_equal; lra.
-Qed.  
-  
-Lemma Q_id_right: forall x, x ** Q1 = x.
-Proof.
-  intros.
-  unfold Q1.
-  destruct x as (((a, b), c), d).
-  simpl.
-  repeat f_equal; lra.
-Qed. 
-
-(* type for unit Quaternion *)
-
-Inductive Versor: Quaternion -> Prop := 
-  | unit: forall x, Qnorm x = 1 -> Versor x.
-
-(* extend the Quaternion group proofs to Versors, and show the group action maintains the predicate *)
-
-Lemma Versor_id_left: forall x : Quaternion, Versor x -> Q1 ** x = x.
-Proof. intros. apply Q_id_left. Qed.  
-
-Lemma Versor_id_right: forall x : Quaternion, Versor x -> x ** Q1 = x.
-Proof. intros. apply Q_id_right. Qed.  
-
-Lemma Versor_assoc: forall x y z, Versor x -> Versor y -> Versor z -> x ** y ** z = x ** (y ** z).
-Proof. intros. apply Q_assoc. Qed.
-
-Lemma Versor_right_inv: (forall x : Quaternion, Versor x -> x ** Qinv x = Q1).
-Proof.
-  intros.
-  destruct H.
-  apply Q_right_inv.
-  unfold not. intros.
-  apply pow_eq with _ _ (2%nat) in H.
-  rewrite pow1 in H.
-  rewrite H in H0.
-  apply R1_neq_R0.
-  assumption.
-Qed.
+(* properties of Quaternions used in the group definition *)
 
 Lemma Qnorm_distr: forall x y, (Qnorm x) * (Qnorm y) = Qnorm (x ** y).
   intros.
@@ -215,46 +122,140 @@ Lemma Qnorm_distr: forall x y, (Qnorm x) * (Qnorm y) = Qnorm (x ** y).
   apply sqrt_mul_rev; assumption.
 Qed.
 
-Lemma Versor_op_closed: forall x y : Quaternion, Versor x -> Versor y -> Versor (x ** y).
-Proof.
-  intros.
-  destruct H.
-  destruct H0.
-  constructor.
-  rewrite <- Qnorm_distr.
-  rewrite H, H0.
-  lra.
-Qed.
+(* type for unit Quaternion *)
 
-Lemma Versor_inverse_closed: forall x : Quaternion, Versor x -> Versor (Qinv x).
+Definition Versor := { q | Qnorm q = 1}.
+
+(* multiplication on Versors, carrying a proof the predicate in preserved *)
+
+Definition Vmul (v1 v2: Versor) : Versor.
 Proof.
-  intros.
-  constructor.
-  destruct H.
-  destruct x as (((a, b), c), d).
+  destruct v1 as [q1 E1].
+  destruct v2 as [q2 E2].
+  apply exist with (q1 ** q2).
+  rewrite <- Qnorm_distr.
+  rewrite E1, E2.
+  lra.
+Defined.
+
+(* likewise for the inverse *)
+
+Definition Vinv (v1: Versor) : Versor.
+Proof.
+  destruct v1 as [q1 E1].
+  exists (Qinv q1).
+  destruct q1 as (((a, b), c), d).
   unfold Qinv, Qconj.
-  rewrite H.
+  rewrite E1.
   replace (1 / 1 ^ 2) with 1 by lra.
   rewrite scalar_q.
   repeat rewrite Rmult_1_l.
-  rewrite <- H.
+  rewrite <- E1.
+  unfold Qnorm.
+  replace ((- b)^2) with (b^2) by lra.
+  replace ((- c)^2) with (c^2) by lra.
+  replace ((- d)^2) with (d^2) by lra.
+  reflexivity.
+Defined. 
+
+(* Q1 is the identity Versor *)
+
+Definition V1: Versor.
+Proof.
+  unfold Versor.
+  apply exist with Q1.
+  unfold Q1. simpl.
+  replace (_ + _) with 1 by lra.
+  apply sqrt_1.
+Defined.  
+
+(* lift Qmul notation *)
+
+Declare Scope V_scope.
+Delimit Scope V_scope with V.
+Open Scope V_scope.
+Bind Scope V_scope with Versor.
+Reserved Notation "x ** y" (at level 40, left associativity).
+Infix "**" := Vmul: V_scope.
+
+(* equivalence relation for the Versors sigma type *)
+
+Definition versor_equiv (v1 v2 : Versor) : Prop := sigma_proj1_equiv eq_equiv v1 v2.
+Reserved Notation "x $= y" (at level 70).
+Infix "$=" := versor_equiv: V_scope.
+
+(* proofs of the group properties *)
+
+Lemma Versor_id_left: forall v : Versor, (V1 ** v) $= v.
+Proof.
+  intros.
+  unfold versor_equiv, sigma_proj1_equiv, proj1_sig.
+  destruct v as [(((a, b), c), d) E].
+  simpl.
+  repeat f_equal; lra.
+Qed.
+
+Lemma Versor_id_right: forall v : Versor, (v ** V1) $= v.
+Proof.
+  intros.
+  unfold versor_equiv, sigma_proj1_equiv, proj1_sig.
+  destruct v as [(((a, b), c), d) E].
+  simpl.
+  repeat f_equal; lra.
+Qed.
+
+Lemma Versor_assoc: forall v1 v2 v3, v1 ** v2 ** v3 $= v1 ** (v2 ** v3).
+Proof.
+  intros.
+  destruct v1 as [(((a1, b1), c1), d1) E1].
+  destruct v2 as [(((a2, b2), c2), d2) E2].
+  destruct v3 as [(((a3, b3), c3), d3) E3].
+  unfold versor_equiv, sigma_proj1_equiv.
+  simpl.
+  f_equal.
+  f_equal.
+  f_equal.
+  all: lra.
+Qed.
+
+Lemma Versor_right_inv: forall v, v ** (Vinv v) $= V1.
+Proof.
+  intros.
+  destruct v as [(((a, b), c), d) E].
+  unfold versor_equiv, sigma_proj1_equiv.
   simpl.
   repeat rewrite Rmult_1_r.
-  repeat rewrite Rmult_opp_opp.
-  reflexivity.
-Qed.    
+  repeat rewrite Rmult_0_l.
+  unfold Qnorm in E.
+  replace (sqrt _) with 1.
+  - replace (1 / (1 * 1)) with 1 by lra.
+    repeat rewrite Rmult_1_l.
+    repeat rewrite Rminus_0_r.
+    repeat rewrite Rplus_0_r.
+    unfold Q1.
+    repeat f_equal.
+    apply pow_eq with _ _ (2%nat) in E.
+    rewrite pow1, pow2_sqrt in E.
+    rewrite <- E. lra.
+    repeat apply Rplus_le_le_0_compat.
+    all: try lra.
+    all: apply pow2_ge_0.
+  - rewrite <- E. 
+    simpl. 
+    repeat rewrite Rmult_1_r.
+    reflexivity.
+Qed.
 
-#[export] Instance Versor_is_Group : PredicateGroup := {
-    id             := Q1 
-  ; inverse        := Qinv
-  ; op             := Qmul
-  ; pred           := Versor
-  ; rel            := eq
-  ; rel_equiv      := eq_equiv
+(* group instance *)
+
+#[export] Instance Versor_is_Group : Group := {
+    id             := V1
+  ; inverse        := Vinv
+  ; op             := Vmul
+  ; rel            := versor_equiv
+  ; rel_equiv      := sigma_proj1_equiv_equiv eq_equiv
   ; id_left        := Versor_id_left
   ; id_right       := Versor_id_right
   ; assoc          := Versor_assoc
   ; right_inv      := Versor_right_inv
-  ; op_closed      := Versor_op_closed
-  ; inverse_closed := Versor_inverse_closed
 }.
