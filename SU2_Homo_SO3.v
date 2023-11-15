@@ -8,10 +8,7 @@ Require Import QuantumLib.Matrix.
 
 (* TODO make this proof use composition of homomorphisms *)
 
-Definition SU2_to_SO3 (su2: SU2) : SO3.
-Proof.
-  apply (Versor_to_SO3 (SU2_to_Versor su2)).
-Defined.
+Definition SU2_to_SO3 (su2: SU2) : SO3 := Versor_to_SO3 (SU2_to_Versor su2).
 
 Definition SU2_SO3_hom_mul: forall su2_a su2_b : SU2,
   SU2_to_SO3 (su2_a × su2_b) *= (SU2_to_SO3 su2_a) × (SU2_to_SO3 su2_b).
