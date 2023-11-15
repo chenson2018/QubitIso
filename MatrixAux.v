@@ -24,7 +24,7 @@ Definition d3_det (A: Matrix 3 3) : C :=
   let g := A 2 0 in
   let h := A 2 1 in
   let i := A 2 2 in
-  a*e*i + b*f*g + c*d*h - c*e*g - b*d*i - a*f*h
+  a*e*i + b*f*g + c*d*h + - c*e*g + - b*d*i + - a*f*h
 .
 Local Close Scope nat_scope.
 

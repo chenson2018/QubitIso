@@ -158,6 +158,21 @@ Proof.
   reflexivity.
 Defined. 
 
+(* negation, used in the double covering proof *)
+
+Definition Vopp (v: Versor) : Versor.
+Proof.
+  unfold Versor.
+  destruct v as [(((x, y), z), w) norm].
+  exists (-x, -y, -z, -w).
+  unfold Qnorm in *.
+  replace ((- x) ^ 2) with (x ^ 2) by lra.
+  replace ((- y) ^ 2) with (y ^ 2) by lra.
+  replace ((- z) ^ 2) with (z ^ 2) by lra.
+  replace ((- w) ^ 2) with (w ^ 2) by lra.
+  assumption.
+Defined.
+
 (* Q1 is the identity Versor *)
 
 Definition V1: Versor.
