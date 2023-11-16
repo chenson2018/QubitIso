@@ -49,6 +49,47 @@ Proof.
   - apply S. assumption.
 Qed.
 
+(* these are to use with `Add Parametric` *)
+
+Lemma sigma_proj1_refl
+  {X: Type} 
+  {A: X -> Prop} 
+  {rel: relation X} 
+  (e: equiv X rel)
+  : reflexive (sig A) (sigma_proj1_equiv e).
+Proof.
+  assert (H: equiv (sig A) (sigma_proj1_equiv e)).
+  { apply sigma_proj1_equiv_equiv. }
+  destruct H as [r [t s]].
+  assumption.
+Qed.  
+
+Lemma sigma_proj1_sym
+  {X: Type} 
+  {A: X -> Prop} 
+  {rel: relation X} 
+  (e: equiv X rel)
+  : symmetric (sig A) (sigma_proj1_equiv e).
+Proof.
+  assert (H: equiv (sig A) (sigma_proj1_equiv e)).
+  { apply sigma_proj1_equiv_equiv. }
+  destruct H as [r [t s]].
+  assumption.
+Qed.  
+
+Lemma sigma_proj1_trans
+  {X: Type} 
+  {A: X -> Prop} 
+  {rel: relation X} 
+  (e: equiv X rel)
+  : transitive (sig A) (sigma_proj1_equiv e).
+Proof.
+  assert (H: equiv (sig A) (sigma_proj1_equiv e)).
+  { apply sigma_proj1_equiv_equiv. }
+  destruct H as [r [t s]].
+  assumption.
+Qed.
+
 (* groups *)
 
 Class Group {G: Type}: Type := {

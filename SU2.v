@@ -72,6 +72,12 @@ Definition SU2_equiv (U1 U2 : SU2) : Prop :=
 Reserved Notation "x *= y" (at level 70).
 Infix "*=" := SU2_equiv: SU2_scope.
 
+Add Parametric Relation : SU2 SU2_equiv
+  reflexivity proved by (sigma_proj1_refl (mat_equiv_equiv 2 2))
+  symmetry proved by (sigma_proj1_sym (mat_equiv_equiv 2 2))
+  transitivity proved by (sigma_proj1_trans (mat_equiv_equiv 2 2))
+as SU2_equiv_rel.
+
 (* matrix inversion in SU(2), carrying proof of closure *)
 
 Definition SU2_inv (A: SU2) : SU2.

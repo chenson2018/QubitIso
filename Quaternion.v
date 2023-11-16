@@ -199,6 +199,12 @@ Definition versor_equiv (v1 v2 : Versor) : Prop := sigma_proj1_equiv eq_equiv v1
 Reserved Notation "x $= y" (at level 70).
 Infix "$=" := versor_equiv: V_scope.
 
+Add Parametric Relation : Versor versor_equiv
+  reflexivity proved by (sigma_proj1_refl eq_equiv)
+  symmetry proved by (sigma_proj1_sym eq_equiv)
+  transitivity proved by (sigma_proj1_trans eq_equiv)
+as Versor_equiv_rel.
+
 (* proofs of the group properties *)
 
 Lemma Versor_id_left: forall v : Versor, (V1 ** v) $= v.

@@ -78,6 +78,12 @@ Definition SO3_equiv (U1 U2 : SO3) : Prop :=
 Reserved Notation "x *= y" (at level 70).
 Infix "*=" := SO3_equiv: SO3_scope.
 
+Add Parametric Relation : SO3 SO3_equiv
+  reflexivity proved by (sigma_proj1_refl (mat_equiv_equiv 3 3))
+  symmetry proved by (sigma_proj1_sym (mat_equiv_equiv 3 3))
+  transitivity proved by (sigma_proj1_trans (mat_equiv_equiv 3 3))
+as SO3_equiv_rel.
+
 (* matrix inversion in SO(3), carrying proof of closure *)
 
 Lemma d3_det_transpose: forall (A: Matrix 3 3), d3_det (A ⊤ ) = (d3_det A).
