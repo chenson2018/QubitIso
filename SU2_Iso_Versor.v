@@ -52,7 +52,7 @@ Proof.
   by_cell; lca.
 Qed.
 
-#[export] Instance SU2_Homomorphism_Versor: 
+#[export] Instance Versor_Homomorphism_SU2: 
   @GroupHomomorphism
     Versor
     SU2
@@ -115,7 +115,7 @@ Proof.
   - rewrite gen_a_U. lca.
 Qed.
 
-#[export] Instance SU2_Isomorphism_Versor:
+#[export] Instance Versor_Isomorphism_SU2:
   @GroupIsomorphism
     Versor
     SU2
@@ -125,7 +125,7 @@ Qed.
     SU2_equiv
   :=
 {
-    hom              := SU2_Homomorphism_Versor
+    hom              := Versor_Homomorphism_SU2
   ; iso_f_inv        := SU2_to_Versor
   ; iso_right_inv    := SU2_Versor_iso_right_inv
   ; iso_left_inv     := SU2_Versor_iso_left_inv
