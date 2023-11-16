@@ -19,21 +19,15 @@ Proof.
     end
   ).
   unfold Qnorm in E.
-  apply pow_eq with _ _ (2%nat) in E.
+  apply pow_eq with (n := 2%nat) in E.
   rewrite pow2_sqrt in E.
   replace ((1^2)%R) with 1 in E by lra.
   repeat split.
   - show_wf.
   - lca.
   - lca.
-  - unfold d2_det.
-    unfold Cmult.
-    simpl.
-    unfold Cminus.
-    unfold Cplus.
-    simpl.
-    unfold C1.
-    f_equal.
+  - unfold d2_det, Cmult, Cminus, Cplus, C1.
+    simpl. f_equal.
     rewrite <- E.
     all: lra.
   - repeat apply Rplus_le_le_0_compat.
