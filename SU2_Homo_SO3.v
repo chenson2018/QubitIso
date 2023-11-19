@@ -18,7 +18,6 @@ Theorem SU2_Homomorphism_SO3:
     (fun U => Versor_to_SO3 (SU2_to_Versor U)).
 Proof.
   apply GroupHomomorphism_trans with versor_equiv Vmul.
-  (* TODO organize carrying equivalences better *)
   - constructor.
     + constructor.
     + apply (sigma_proj1_sym eq_equiv).
