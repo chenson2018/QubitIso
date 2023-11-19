@@ -1,20 +1,12 @@
 Require Import Relations.
+Require Import Setoid.
+Require Import Morphisms.
 
 Declare Scope group_scope.
 Delimit Scope group_scope with G.
 Open Scope group_scope.
 
-Reserved Notation "x • y" (at level 40, left associativity).
-Class group_binop (G : Type) := group_op : G -> G -> G.
-Infix "•" := group_op: group_scope.
-
-Reserved Notation "x •= y" (at level 70).
-Class group_eq_rel (G : Type) := group_eq : relation G.
-Infix "•=" := group_eq: group_scope.
-
 (* equivalence relations *)
-
-(* TODO check if these are in the standard library *)
 
 Lemma eq_equiv {X}: equiv X eq.
 Proof.
@@ -92,48 +84,239 @@ Qed.
 
 (* groups *)
 
-Class Group {G: Type}: Type := {
+Class Group (G: Type) (op: G -> G -> G) (rel: relation G) := {
         id : G
       ; inverse: G -> G
-      ; op: group_binop G
-      ; rel: group_eq_rel G
       ; rel_equiv: equiv G rel
-      ; id_left {x}: id • x •= x
-      ; id_right {x}: x • id •= x
-      ; assoc {x y z}: (x • y) • z •= x • (y • z)
-      ; right_inv {x}: x • (inverse x) •= id
+      ; id_left {x}: rel (op id x) x
+      ; id_right {x}: rel (op x id) x
+      ; assoc {x y z}: rel (op (op x y) z) (op x (op y z))
+      ; right_inv {x}: rel (op x (inverse x)) id
 }.
 
-(* TODO still having trouble inferring the operations *)
-
-Class GroupHomomorphism
-  {G H: Type} 
-  {Gop: group_binop G}
-  {Hop: group_binop H}
-  {Grel: group_eq_rel G}
-  {Hrel: group_eq_rel H}
+Class GroupHomomorphism G H
+  (Gop: G -> G -> G) 
+  (Hop: H -> H -> H) 
+  (Grel: relation G)
+  (Hrel: relation H)
+  (hom_f: G -> H)
 : Type 
 := {
-    hom_left_group: @Group G
-  ; hom_right_group: @Group H
-  ; hom_f: G -> H
-  ; hom_mul {a b}: hom_f (a • b) •= hom_f a • hom_f b
+    hom_left_group: Group G Gop Grel
+  ; hom_right_group: Group H Hop Hrel
+  ; hom_mul {a1 a2}: Hrel
+                      (hom_f (Gop a1 a2)) 
+                      (Hop (hom_f a1) (hom_f a2))
 }.
 
-(* TODO reorganizing so that we don't have to access inside hom could make this more readable *)
-
-Class GroupIsomorphism
-  {G H: Type} 
-  {Gop: group_binop G}
-  {Hop: group_binop H}
-  {Grel: group_eq_rel G}
-  {Hrel: group_eq_rel H}
+Class GroupIsomorphism G H
+  (Gop: G -> G -> G) 
+  (Hop: H -> H -> H) 
+  (Grel: relation G)
+  (Hrel: relation H)
+  (hom_f: G -> H)
+  (iso_f_inv: H -> G)
 : Type 
 := {
-    hom: @GroupHomomorphism G H _ _ _ _
-  ; iso_f_inv: H -> G
+    hom: GroupHomomorphism G H Gop Hop Grel Hrel hom_f
   ; iso_left_inv {g: G}: 
-      iso_f_inv (hom.(hom_f) g) •= g
+      Grel (iso_f_inv (hom_f g)) g
   ; iso_right_inv {h: H}: 
-      hom.(hom_f) (iso_f_inv h) •= h 
+      Hrel (hom_f (iso_f_inv h)) h 
 }.
+
+Section inverses.
+
+Variables A B : Type.
+
+Variable Arel: relation A.
+Variable Brel: relation B.
+
+Variable A_Eq: Equivalence Arel.
+Variable B_Eq: Equivalence Brel.
+
+Variable f   : A -> B.
+Variable f_rw   : Proper (Arel ==> Brel) f.
+
+#[local] Instance f_morphism: Proper (Arel ==> Brel) f.
+Proof. apply f_rw. Qed.
+
+#[local] Instance A_rw: Equivalence Arel.
+Proof. apply A_Eq. Qed.
+
+#[local] Instance B_rw: Equivalence Brel.
+Proof. apply B_Eq. Qed.
+
+Definition injection := forall a1 a2, Brel (f a1) (f a2) -> Arel a1 a2.
+Definition left_inverse := exists finv: B -> A, Proper (Brel ==> Arel) finv /\ forall a: A, Arel (finv (f a)) a.
+
+Definition surjection := forall b, exists a, Brel (f a) b.
+Definition right_inverse := exists finv: B -> A, forall b: B, Brel (f (finv b)) b.
+
+Lemma injection_left_inverse: left_inverse -> injection.
+Proof.
+  unfold left_inverse, injection.
+  intros.
+  destruct H as [finv [finv_rw l_inv]].
+  assert (H: Arel (finv (f a1)) a1) by (apply l_inv).
+  rewrite <- H.
+  rewrite H0.
+  rewrite l_inv.
+  reflexivity.
+Qed.
+
+Lemma surjection_right_inverse: right_inverse -> surjection.
+Proof.
+  unfold right_inverse, surjection.
+  intros.
+  destruct H as [finv H'].
+  exists (finv b).
+  apply H'.
+Qed.
+
+Definition bijection := surjection /\ injection.
+
+End inverses.
+
+Section morphism_properties.
+
+Variables G H : Type.
+
+Variable Grel: relation G.
+Variable Hrel: relation H.
+
+Variable G_Eq: Equivalence Grel.
+Variable H_Eq: Equivalence Hrel.
+
+Variable f: G -> H.
+Variable finv: H -> G.
+
+Variable f_rw   : Proper (Grel ==> Hrel) f.
+Variable finv_rw: Proper (Hrel ==> Grel) finv.
+
+#[local] Instance morphism_properties_f_morphism: Proper (Grel ==> Hrel) f.
+Proof. apply f_rw. Qed.
+
+#[local] Instance morphism_properties_finv_morphism: Proper (Hrel ==> Grel) finv.
+Proof. apply finv_rw. Qed.
+
+#[local] Instance G_rw: Equivalence Grel.
+Proof. apply G_Eq. Qed.
+
+#[local] Instance H_rw: Equivalence Hrel.
+Proof. apply H_Eq. Qed.
+
+Variables Gop: G -> G -> G.
+Variables Hop: H -> H -> H.
+
+Infix "=G" := Grel (at level 70): group_scope.
+Infix "=H" := Hrel (at level 70): group_scope.
+Infix "*G" := Gop (at level 40, left associativity): group_scope.
+Infix "*H" := Hop (at level 40, left associativity): group_scope.
+
+Variable Gop_compat: forall g1 g2 g1' g2': G, 
+  g1 =G g1' ->
+  g2 =G g2' ->
+  g1 *G g2 =G g1' *G g2'.
+
+Add Parametric Morphism: Gop
+  with signature Grel ==> Grel ==> Grel as Gop_mor.
+Proof. intros. apply Gop_compat; easy. Qed.
+
+Variable Hop_compat: forall h1 h2 h1' h2': H, 
+  h1 =H h1' ->
+  h2 =H h2' ->
+  h1 *H h2 =H h1' *H h2'.
+
+Add Parametric Morphism: Hop
+  with signature Hrel ==> Hrel ==> Hrel as Hop_mor.
+Proof. intros. apply Hop_compat; easy. Qed.
+
+Lemma Iso_to_Hom_inv:
+  GroupIsomorphism  G H Gop Hop Grel Hrel f finv ->
+  GroupHomomorphism H G Hop Gop Hrel Grel finv.
+Proof.
+  intros.
+  destruct X.
+  apply Build_GroupHomomorphism; destruct hom0.
+  - assumption.
+  - assumption.
+  - intros.
+    (* for my sanity *)
+    rename a1 into h1.
+    rename a2 into h2.
+    assert (sur: surjection H G Grel finv).
+    { apply surjection_right_inverse. exists f. assumption. }
+    unfold surjection in sur.
+    (* might need choice here ??? *)
+    (* but first I think I should see if I can prove the premises for my actual types... *)
+    assert (G1: exists g1, finv h1 =G g1).
+    { admit. }
+    assert (G2: exists g2, finv h2 =G g2).
+    { admit. }
+    destruct G1 as [g1 G1].
+    destruct G2 as [g2 G2].
+    assert (H1: f g1 =H h1).
+    { rewrite <- G1. apply iso_right_inv0. }
+    assert (H2: f g2 =H h2).
+    { rewrite <- G2. apply iso_right_inv0. }
+    assert (K: f (g1 *G g2) =H h1 *H h2).
+    { rewrite hom_mul0, H1, H2. reflexivity. }
+    rewrite <- K.
+    rewrite iso_left_inv0, G1, G2. 
+    reflexivity.
+Admitted.
+
+End morphism_properties.
+
+Section hom_trans.
+
+Variables A B C : Type.
+
+Variable Arel: relation A.
+Variable Brel: relation B.
+Variable Crel: relation C.
+
+Variable A_Eq: Equivalence Arel.
+Variable B_Eq: Equivalence Brel.
+Variable C_Eq: Equivalence Crel.
+
+Variable AtoB: A -> B.
+Variable BtoC: B -> C.
+
+Variables Aop: A -> A -> A.
+Variables Bop: B -> B -> B.
+Variables Cop: C -> C -> C.
+
+Infix "=A" := Arel (at level 70): group_scope.
+Infix "*A" := Aop (at level 40, left associativity): group_scope.
+Infix "=B" := Brel (at level 70): group_scope.
+Infix "*B" := Bop (at level 40, left associativity): group_scope.
+Infix "=C" := Crel (at level 70): group_scope.
+Infix "*C" := Cop (at level 40, left associativity): group_scope.
+
+Variable BtoC_rw   : Proper (Brel ==> Crel) BtoC.
+
+#[local] Instance BtoC_morphism: Proper (Brel ==> Crel) BtoC.
+Proof. apply BtoC_rw. Qed.
+
+Lemma GroupHomomorphism_trans:
+  GroupHomomorphism A B Aop Bop Arel Brel AtoB ->
+  GroupHomomorphism B C Bop Cop Brel Crel BtoC ->
+  GroupHomomorphism A C Aop Cop Arel Crel (fun a => BtoC (AtoB a)).
+Proof.
+  intros Hom_A_B Hom_B_C.
+  destruct Hom_A_B.
+  destruct Hom_B_C.
+  apply Build_GroupHomomorphism.
+  - assumption.
+  - assumption.
+  - intros.
+    specialize hom_mul1 with (AtoB a1) (AtoB a2).
+    rewrite <- hom_mul1.
+    specialize hom_mul0 with a1 a2.
+    rewrite <- hom_mul0.
+    reflexivity.
+Qed.
+
+End hom_trans.

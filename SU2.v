@@ -159,11 +159,9 @@ Qed.
 
 (* group instance *)
 
-#[export] Instance SU2_is_Group : Group := {
+#[export] Instance SU2_is_Group : Group SU2 SU2_mul SU2_equiv := {
     id             := I2
   ; inverse        := SU2_inv
-  ; op             := SU2_mul
-  ; rel            := SU2_equiv
   ; rel_equiv      := sigma_proj1_equiv_equiv (mat_equiv_equiv 2 2)
   ; id_left        := SU2_id_left
   ; id_right       := SU2_id_right

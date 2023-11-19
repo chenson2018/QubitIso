@@ -1,32 +1,38 @@
-Require Import QubitIso.SU2_Iso_Versor.
+Require Import QubitIso.Group.
 Require Import QubitIso.Versor_Homo_SO3.
+Require Import QubitIso.SU2_Iso_Versor.
 Require Import QubitIso.SU2.
 Require Import QubitIso.SO3.
-Require Import QubitIso.Group.
 Require Import QubitIso.Quaternion.
 Require Import QuantumLib.Matrix.
+Require Import QubitIso.MatrixAux.
 
-(* TODO make this proof use composition of homomorphisms *)
-
-Definition SU2_to_SO3 (su2: SU2) : SO3 := Versor_to_SO3 (SU2_to_Versor su2).
-
-Definition SU2_SO3_hom_mul: forall su2_a su2_b : SU2,
-  SU2_to_SO3 (su2_a × su2_b) *= (SU2_to_SO3 su2_a) × (SU2_to_SO3 su2_b).
-Proof.
-Admitted.
-
-#[export] Instance SU2_Homomorphism_SO3 : 
-  @GroupHomomorphism 
+Theorem SU2_Homomorphism_SO3:
+  GroupHomomorphism
     SU2
     SO3
     SU2_mul
     SO3_mul
     SU2_equiv
     SO3_equiv
-  := 
-{
-    hom_left_group  := SU2_is_Group
-  ; hom_right_group := SO3_is_Group
-  ; hom_f           := SU2_to_SO3
-  ; hom_mul         := SU2_SO3_hom_mul
-}.
+    (fun U => Versor_to_SO3 (SU2_to_Versor U)).
+Proof.
+  apply GroupHomomorphism_trans with versor_equiv Vmul.
+  (* TODO organize carrying equivalences better *)
+  - constructor.
+    + constructor.
+    + apply (sigma_proj1_sym eq_equiv).
+    + apply (sigma_proj1_trans eq_equiv).
+  - constructor.
+    + constructor.
+    + apply (sigma_proj1_sym (mat_equiv_equiv 3 3)).
+    + apply (sigma_proj1_trans (mat_equiv_equiv 3 3)).
+  - unfold Morphisms.Proper, Morphisms.respectful.
+    intros.
+    unfold versor_equiv, SO3_equiv, sigma_proj1_equiv, proj1_sig in *.
+    destruct x as [(((a1, b1), c1), d1) E1].
+    destruct y as [(((a2, b2), c2), d2) E2].
+    by_cell; inversion H; subst; reflexivity.
+  - apply SU2_Iso_to_hom.
+  - apply Versor_Homomorphism_SO3.
+Qed.

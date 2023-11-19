@@ -184,11 +184,9 @@ Qed.
 
 (* group instance *)
 
-#[export] Instance SO3_is_Group : Group := {
+#[export] Instance SO3_is_Group : Group SO3 SO3_mul SO3_equiv := {
     id             := I3
   ; inverse        := SO3_inv
-  ; op             := SO3_mul
-  ; rel            := SO3_equiv
   ; rel_equiv      := sigma_proj1_equiv_equiv (mat_equiv_equiv 3 3)
   ; id_left        := SO3_id_left
   ; id_right       := SO3_id_right

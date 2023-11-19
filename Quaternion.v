@@ -269,11 +269,9 @@ Qed.
 
 (* group instance *)
 
-#[export] Instance Versor_is_Group : Group := {
+#[export] Instance Versor_is_Group : Group Versor Vmul versor_equiv := {
     id             := V1
   ; inverse        := Vinv
-  ; op             := Vmul
-  ; rel            := versor_equiv
   ; rel_equiv      := sigma_proj1_equiv_equiv eq_equiv
   ; id_left        := Versor_id_left
   ; id_right       := Versor_id_right

@@ -47,18 +47,18 @@ Proof.
 Qed.
 
 #[export] Instance Versor_Homomorphism_SU2: 
-  @GroupHomomorphism
-    Versor
-    SU2
-    Vmul
-    SU2_mul
-    versor_equiv
-    SU2_equiv
+  GroupHomomorphism 
+    Versor 
+    SU2 
+    Vmul 
+    SU2_mul 
+    versor_equiv 
+    SU2_equiv 
+    Versor_to_SU2
   := 
 {
     hom_left_group  := Versor_is_Group
   ; hom_right_group := SU2_is_Group
-  ; hom_f           := Versor_to_SU2
   ; hom_mul         := Versor_SU2_hom_mul
 }.
 
@@ -110,17 +110,89 @@ Proof.
 Qed.
 
 #[export] Instance Versor_Isomorphism_SU2:
-  @GroupIsomorphism
+  GroupIsomorphism
     Versor
     SU2
     Vmul
     SU2_mul
     versor_equiv
     SU2_equiv
+    Versor_to_SU2
+    SU2_to_Versor
   :=
 {
     hom              := Versor_Homomorphism_SU2
-  ; iso_f_inv        := SU2_to_Versor
   ; iso_right_inv    := SU2_Versor_iso_right_inv
   ; iso_left_inv     := SU2_Versor_iso_left_inv
 }.
+
+Lemma SU2_Iso_to_hom: 
+  GroupHomomorphism 
+    SU2 
+    Versor 
+    SU2_mul 
+    Vmul 
+    SU2_equiv 
+    versor_equiv 
+    SU2_to_Versor.
+Proof.
+  apply Iso_to_Hom_inv with Versor_to_SU2.
+  - constructor.
+    + constructor.
+    + apply (sigma_proj1_sym eq_equiv).
+    + apply (sigma_proj1_trans eq_equiv).
+  - constructor.
+    + constructor.
+    + apply (sigma_proj1_sym (mat_equiv_equiv 2 2)).
+    + apply (sigma_proj1_trans (mat_equiv_equiv 2 2)).
+  - unfold Morphisms.Proper, Morphisms.respectful.
+    intros.
+    rename x into v1.
+    rename y into v2.
+    unfold SU2_equiv, sigma_proj1_equiv, proj1_sig.
+    destruct v1 as [(((a1, b1), c1), d1) E1].
+    destruct v2 as [(((a2, b2), c2), d2) E2].
+    simpl.
+      by_cell
+    ; unfold versor_equiv, sigma_proj1_equiv, proj1_sig in H
+    ; inversion H
+    ; subst
+    ; reflexivity
+    .
+  - unfold Morphisms.Proper, Morphisms.respectful.
+    intros.
+    rename x into U1.
+    rename y into U2.
+    unfold versor_equiv, sigma_proj1_equiv, proj1_sig.
+    destruct U1 as [U1 [WF_U1 [[gen_a_U1 gen_b_U1] norm_U1]]].
+    destruct U2 as [U2 [WF_U2 [[gen_a_U2 gen_b_U2] norm_U2]]].
+    simpl.
+    unfold SU2_equiv, sigma_proj1_equiv, proj1_sig in H.
+    unfold mat_equiv in H.
+    assert (Ha: (U1 0%nat 0%nat) = (U2 0%nat 0%nat)) by (apply H; lia).
+    assert (Hb: (U1 0%nat 1%nat) = (U2 0%nat 1%nat)) by (apply H; lia).
+    repeat rewrite <- Ha.
+    repeat rewrite <- Hb.
+    reflexivity.
+  - intros.
+    unfold versor_equiv, sigma_proj1_equiv, proj1_sig in *.
+    unfold Vmul.
+    destruct g1 as [(((a1, b1), c1), d1) E1].
+    destruct g2 as [(((a2, b2), c2), d2) E2].
+    destruct g1' as [(((a1', b1'), c1'), d1') E1'].
+    destruct g2' as [(((a2', b2'), c2'), d2') E2'].
+    inversion H.
+    inversion H0.
+    subst.
+    reflexivity.
+  - intros.
+    unfold SU2_equiv, sigma_proj1_equiv, proj1_sig in *.
+    unfold SU2_mul.
+    destruct h1 as [h1 [WF_h1 [[gen_a_h1 gen_b_h1] norm_h1]]].
+    destruct h2 as [h2 [WF_h2 [[gen_a_h2 gen_b_h2] norm_h2]]].
+    destruct h1' as [h1' [WF_h1' [[gen_a_h1' gen_b_h1'] norm_h1']]].
+    destruct h2' as [h2' [WF_h2' [[gen_a_h2' gen_b_h2'] norm_h2']]].
+    rewrite H, H0.
+    reflexivity.
+  - apply Versor_Isomorphism_SU2.
+Qed.

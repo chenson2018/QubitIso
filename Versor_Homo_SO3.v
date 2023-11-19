@@ -69,18 +69,18 @@ Proof.
 Qed.
 
 #[export] Instance Versor_Homomorphism_SO3: 
-  @GroupHomomorphism
+  GroupHomomorphism
     Versor
     SO3
     Vmul
     SO3_mul
     versor_equiv
     SO3_equiv
+    Versor_to_SO3
   := 
 {
     hom_left_group  := Versor_is_Group
   ; hom_right_group := SO3_is_Group
-  ; hom_f           := Versor_to_SO3
   ; hom_mul         := Versor_SO3_hom_mul
 }.
 
