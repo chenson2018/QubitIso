@@ -1,0 +1,36 @@
+name: Build LaTeX document
+on:
+  push:
+    paths:
+      - presentation/**
+jobs:
+  build_latex:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v2
+      - name: pdflatex main
+        uses: dante-ev/latex-action@latest
+        with:
+          working_directory: presentation
+          root_file: presentation.tex
+          compiler: pdflatex
+          args: -interaction=nonstopmode -shell-escape
+      - name: bibtex main
+        uses: dante-ev/latex-action@latest
+        with:
+          working_directory: presentation
+          root_file: presentation.aux
+          compiler: bibtex
+          args: 
+      - name: pdflatex main
+        uses: dante-ev/latex-action@latest
+        with:
+          working_directory: presentation
+          root_file: presentation.tex
+          compiler: pdflatex
+          args: -interaction=nonstopmode -shell-escape
+      - uses: actions/upload-artifact@v3
+        with:
+          name: presentation
+          path: presentation/presentation.tex
