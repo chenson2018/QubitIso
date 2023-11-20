@@ -4,7 +4,7 @@ This repository constructs a proof of the group homomorphism between SU(2) and S
 
 # Presentation
 
-The repo includes a [presentation](presentation/presentation.pdf) prepared for a seminar course on quantum computing at Drexel University (led by professors Ali Shokoufandeh and Ali Shokoufandeh).
+The repo includes a [presentation](presentation/presentation.pdf) prepared for a seminar course on quantum computing at Drexel University (led by professors Ali Shokoufandeh and Jeremy Johnson).
 
 # Dependencies 
 
