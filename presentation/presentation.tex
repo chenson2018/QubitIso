@@ -276,8 +276,15 @@ and have 1 as a left and right identity.
 \begin{itemize}
 	\item We can also view quaternions as pairs of complex numbers $(a + bi,\ c + di) \equiv a + b\,\mathbf{i} +  c\,\mathbf{j} + d\,\mathbf{k}$
 	\item This idea of repeatedly taking a product of an algebra with itself is refered to as the \textit{Cayley–Dickson construction}, where at each step we loose some property of the algebra
-	\item By identifying the \textit{pure imaginary} quaternions $(a = 0)$ with $\mathbb{R} ^ 3$, we can model rotations in a more numerically stable way
-	\item This is the essential intuition, that both qubits and quaternions can be represented by pairs of complex numbers
+	\item Another way of viewing the quaternions that connects with quantum computing is through an isomorphism to the Pauli matrices. One such isomorphism is given by:
+$$
+  \mathbf{1} \mapsto I_2, \quad
+  \mathbf{i} \mapsto i\,Z \, , \quad
+  \mathbf{j} \mapsto i\,Y \, , \quad
+  \mathbf{k} \mapsto i\,X
+$$
+	\item By identifying the \textit{pure imaginary} quaternions $(a = 0)$ with $\mathbb{R} ^ 3$, we can model rotations in a numerically stable way
+	\item This is the intuition behind the Bloch sphere, that both qubits and quaternions can be represented by pairs of complex numbers
 \end{itemize}
 
 \end{frame}
