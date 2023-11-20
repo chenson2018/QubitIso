@@ -404,34 +404,35 @@ Class GroupHomomorphism G H
 \begin{frame}[fragile]
 \frametitle{Representing Morphisms}
 
-Another subtle point about having multiple equivalence relations is that we must prove they are "compatible"
+Another subtle point about having multiple equivalence relations is that we must prove they are ``compatible"
 
 \begin{lstlisting}[language=Coq, basicstyle=\tiny]{Name}
-Section morphism_properties.
+Section hom_trans.
+Variables A B C : Type.
 
-Variables G H : Type.
+Variable Arel: relation A.
+Variable Brel: relation B.
+Variable Crel: relation C.
 
-Variable Grel: relation G.
-Variable Hrel: relation H.
+Variable A_Eq: Equivalence Arel.
+Variable B_Eq: Equivalence Brel.
+Variable C_Eq: Equivalence Crel.
 
-Variable G_Eq: Equivalence Grel.
-Variable H_Eq: Equivalence Hrel.
+Variable AtoB: A -> B.
+Variable BtoC: B -> C.
 
-Variable f: G -> H.
-Variable finv: H -> G.
+Variables Aop: A -> A -> A.
+Variables Bop: B -> B -> B.
+Variables Cop: C -> C -> C.
 
-Variable f_rw   : Proper (Grel ≈ Hrel) f.
-Variable finv_rw: Proper (Hrel ≈ Grel) finv.
+Variable BtoC_rw   : Proper (Brel ≈ Crel) BtoC.
 
-.
-.
-.
-
-Lemma Iso_to_Hom_inv:
-  GroupIsomorphism  G H Gop Hop Grel Hrel f finv ->
-  GroupHomomorphism H G Hop Gop Hrel Grel finv.
+Lemma GroupHomomorphism_trans:
+  GroupHomomorphism A B Aop Bop Arel Brel AtoB ->
+  GroupHomomorphism B C Bop Cop Brel Crel BtoC ->
+  GroupHomomorphism A C Aop Cop Arel Crel (fun a => BtoC (AtoB a)).
 Proof.
-
+...
 \end{lstlisting}
 
 \end{frame}
