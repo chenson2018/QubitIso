@@ -2,6 +2,10 @@
 
 This repository constructs a proof of the group homomorphism between SU(2) and SO(3), with minimal dependencies. The proof is mostly mechanical, showing the isomorphism between SU(2) and unit quaternions (versors), then explicitly constructing the homomorphism from the versors to SO(3).
 
+# Presentation
+
+The repo includes a [presentation](presentation/presentation.pdf) prepared for a seminar course on quantum computing at Drexel University (led by professors Ali Shokoufandeh and Ali Shokoufandeh).
+
 # Dependencies 
 
 This repo relies on [QuantumLib](https://github.com/inQWIRE/QuantumLib) for the definitions of complex numbers and matrices.
