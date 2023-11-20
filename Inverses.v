@@ -15,15 +15,6 @@ Variable B_Eq: Equivalence Brel.
 Variable f   : A -> B.
 Variable f_rw   : Proper (Arel ==> Brel) f.
 
-#[local] Instance f_morphism: Proper (Arel ==> Brel) f.
-Proof. apply f_rw. Qed.
-
-#[local] Instance A_rw: Equivalence Arel.
-Proof. apply A_Eq. Qed.
-
-#[local] Instance B_rw: Equivalence Brel.
-Proof. apply B_Eq. Qed.
-
 Definition injection := forall a1 a2, Brel (f a1) (f a2) -> Arel a1 a2.
 Definition left_inverse := exists finv: B -> A, Proper (Brel ==> Arel) finv /\ forall a: A, Arel (finv (f a)) a.
 
