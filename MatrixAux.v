@@ -36,17 +36,7 @@ Proof.
 Qed.  
 
 (* setoid rewriting, mostly from https://rand.cs.uchicago.edu/vqc/Matrix.html *)
-(*
-Lemma mat_equiv_equivalence: forall m n, Equivalence (@mat_equiv m n).
-Proof.
-  intros.
-  constructor.
-  all: unfold Reflexive, Symmetric, Transitive, mat_equiv; intros.
-  - reflexivity.
-  - rewrite H. reflexivity. all: assumption.
-  - rewrite H, H0. reflexivity. all: assumption.
-Qed.
- *)
+
 #[global] Instance mat_equiv_equivalence {m n}: Equivalence (@mat_equiv m n).
 Proof.
   intros.
