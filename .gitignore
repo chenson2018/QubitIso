@@ -47,6 +47,10 @@ time-of-build-pretty.log
 # WIP
 staging/
 
+# Coq generated Makefile
+CoqMakefile
+CoqMakefile.conf
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
