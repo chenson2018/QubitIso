@@ -345,25 +345,6 @@ This was know as early as Euler:
 \section{Proof in Coq}
 
 \begin{frame}[fragile]
-\frametitle{Representing Matrices, complex numbers, and quaternions}
-
-\begin{itemize}
-	\item we can represent groups abstractly, but it somewhat interesting to directly work with the underlying types
-	\item complex numbers and quaternions are represented as pairs of real numbers
-	\item a matrix is represented as a function that takes two natural numbers and returns a complex number
-\end{itemize}
-
-
-\begin{lstlisting}[language=Coq]
-Definition C := (R * R)%type
-
-Definition Quaternion := (R * R * R * R)%type.
-
-Definition Matrix (m n : nat) := nat -> nat -> C.
-\end{lstlisting}
-\end{frame}
-
-\begin{frame}[fragile]
 \frametitle{Representing Groups}
 \begin{itemize}
 	\item groups are represented as a \textit{typeclass}
@@ -443,6 +424,24 @@ Proof.
 ...
 \end{lstlisting}
 
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Representing Matrices, complex numbers, and quaternions}
+
+\begin{itemize}
+	\item we can represent groups abstractly, but it somewhat interesting to directly work with the underlying types
+	\item complex numbers and quaternions are represented as pairs of real numbers
+	\item a matrix is represented as a function that takes two natural numbers and returns a complex number
+\end{itemize}
+
+\begin{lstlisting}[language=Coq]
+Definition C := (R * R)%type
+
+Definition Quaternion := (R * R * R * R)%type.
+
+Definition Matrix (m n : nat) := nat -> nat -> C.
+\end{lstlisting}
 \end{frame}
 
 
