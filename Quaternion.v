@@ -2,6 +2,7 @@ Require Import Reals.
 Require Import Psatz.
 Require Import QubitIso.Group.
 Require Import Coq.Init.Specif.
+Require Import Setoid.
 
 Open Scope R_scope.
 
@@ -195,22 +196,16 @@ Infix "**" := Vmul: V_scope.
 
 (* equivalence relation for the Versors sigma type *)
 
-Definition versor_equiv (v1 v2 : Versor) : Prop := sigma_proj1_equiv eq_equiv v1 v2.
+Definition versor_equiv (v1 v2 : Versor) : Prop := sigma_proj1_rel eq_equivalence v1 v2.
 Reserved Notation "x $= y" (at level 70).
 Infix "$=" := versor_equiv: V_scope.
-
-Add Parametric Relation : Versor versor_equiv
-  reflexivity proved by (sigma_proj1_refl eq_equiv)
-  symmetry proved by (sigma_proj1_sym eq_equiv)
-  transitivity proved by (sigma_proj1_trans eq_equiv)
-as Versor_equiv_rel.
 
 (* proofs of the group properties *)
 
 Lemma Versor_id_left: forall v : Versor, (V1 ** v) $= v.
 Proof.
   intros.
-  unfold versor_equiv, sigma_proj1_equiv, proj1_sig.
+  unfold versor_equiv, sigma_proj1_rel, proj1_sig.
   destruct v as [(((a, b), c), d) E].
   simpl.
   repeat f_equal; lra.
@@ -219,7 +214,7 @@ Qed.
 Lemma Versor_id_right: forall v : Versor, (v ** V1) $= v.
 Proof.
   intros.
-  unfold versor_equiv, sigma_proj1_equiv, proj1_sig.
+  unfold versor_equiv, sigma_proj1_rel, proj1_sig.
   destruct v as [(((a, b), c), d) E].
   simpl.
   repeat f_equal; lra.
@@ -231,7 +226,7 @@ Proof.
   destruct v1 as [(((a1, b1), c1), d1) E1].
   destruct v2 as [(((a2, b2), c2), d2) E2].
   destruct v3 as [(((a3, b3), c3), d3) E3].
-  unfold versor_equiv, sigma_proj1_equiv.
+  unfold versor_equiv, sigma_proj1_rel.
   simpl.
   f_equal.
   f_equal.
@@ -243,7 +238,7 @@ Lemma Versor_right_inv: forall v, v ** (Vinv v) $= V1.
 Proof.
   intros.
   destruct v as [(((a, b), c), d) E].
-  unfold versor_equiv, sigma_proj1_equiv.
+  unfold versor_equiv, sigma_proj1_rel.
   simpl.
   repeat rewrite Rmult_1_r.
   repeat rewrite Rmult_0_l.
@@ -272,7 +267,7 @@ Qed.
 #[export] Instance Versor_is_Group : Group Versor Vmul versor_equiv := {
     id             := V1
   ; inverse        := Vinv
-  ; rel_equiv      := sigma_proj1_equiv_equiv eq_equiv
+  ; rel_equiv      := sigma_proj1_rel_equivalence eq_equivalence
   ; id_left        := Versor_id_left
   ; id_right       := Versor_id_right
   ; assoc          := Versor_assoc

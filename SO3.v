@@ -74,15 +74,9 @@ Infix "×" := SO3_mul (at level 40, left associativity): SO3_scope.
 (* equivalence relation for the SO3 sigma type *)
 
 Definition SO3_equiv (U1 U2 : SO3) : Prop := 
-  sigma_proj1_equiv (mat_equiv_equiv 3 3) U1 U2.
+  sigma_proj1_rel mat_equiv_equivalence U1 U2.
 Reserved Notation "x *= y" (at level 70).
 Infix "*=" := SO3_equiv: SO3_scope.
-
-Add Parametric Relation : SO3 SO3_equiv
-  reflexivity proved by (sigma_proj1_refl (mat_equiv_equiv 3 3))
-  symmetry proved by (sigma_proj1_sym (mat_equiv_equiv 3 3))
-  transitivity proved by (sigma_proj1_trans (mat_equiv_equiv 3 3))
-as SO3_equiv_rel.
 
 (* matrix inversion in SO(3), carrying proof of closure *)
 
@@ -142,7 +136,7 @@ Defined.
 Lemma SO3_id_left: forall U: SO3, I3 × U *= U.
 Proof.
   intros.
-  unfold SO3_equiv, sigma_proj1_equiv, proj1_sig.
+  unfold SO3_equiv, sigma_proj1_rel, proj1_sig.
   destruct U as [U [WF_U [Real_U [left_inv_U [right_inv_U norm_U]]]]].
   simpl.    
   rewrite Mmult_1_l_mat_eq.
@@ -152,7 +146,7 @@ Qed.
 Lemma SO3_id_right: forall U: SO3, U × I3 *= U.
 Proof.
   intros.
-  unfold SO3_equiv, sigma_proj1_equiv, proj1_sig.
+  unfold SO3_equiv, sigma_proj1_rel, proj1_sig.
   destruct U as [U [WF_U [Real_U [left_inv_U [right_inv_U norm_U]]]]].
   simpl.    
   rewrite Mmult_1_r_mat_eq.
@@ -163,7 +157,7 @@ Lemma SO3_assoc: forall A B C: SO3,
   A × B × C *= A × (B × C).
 Proof.
   intros.
-  unfold SO3_equiv, sigma_proj1_equiv, proj1_sig.
+  unfold SO3_equiv, sigma_proj1_rel, proj1_sig.
   destruct A as [A [WF_A [Real_A [left_inv_A [right_inv_A norm_A]]]]].
   destruct B as [B [WF_B [Real_B [left_inv_B [right_inv_B norm_B]]]]].
   destruct C as [C [WF_C [Real_C [left_inv_C [right_inv_C norm_C]]]]].
@@ -175,7 +169,7 @@ Qed.
 Lemma SO3_right_inv: forall U: SO3, U × (SO3_inv U) *= I3.
 Proof.
   intros.
-  unfold SO3_equiv, sigma_proj1_equiv, proj1_sig.
+  unfold SO3_equiv, sigma_proj1_rel, proj1_sig.
   destruct U as [U [WF_U [Real_U [left_inv_U [right_inv_U norm_U]]]]].
   unfold SO3_inv, SO3_mul.
   simpl.
@@ -187,7 +181,7 @@ Qed.
 #[export] Instance SO3_is_Group : Group SO3 SO3_mul SO3_equiv := {
     id             := I3
   ; inverse        := SO3_inv
-  ; rel_equiv      := sigma_proj1_equiv_equiv (mat_equiv_equiv 3 3)
+  ; rel_equiv      := sigma_proj1_rel_equivalence mat_equiv_equivalence
   ; id_left        := SO3_id_left
   ; id_right       := SO3_id_right
   ; assoc          := SO3_assoc

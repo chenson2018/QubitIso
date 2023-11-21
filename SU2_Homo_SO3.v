@@ -6,6 +6,7 @@ Require Import QubitIso.SO3.
 Require Import QubitIso.Quaternion.
 Require Import QuantumLib.Matrix.
 Require Import QubitIso.MatrixAux.
+Require Import Setoid.
 
 Theorem SU2_Homomorphism_SO3:
   GroupHomomorphism
@@ -18,17 +19,11 @@ Theorem SU2_Homomorphism_SO3:
     (fun U => Versor_to_SO3 (SU2_to_Versor U)).
 Proof.
   apply GroupHomomorphism_trans with versor_equiv Vmul.
-  - constructor.
-    + constructor.
-    + apply (sigma_proj1_sym eq_equiv).
-    + apply (sigma_proj1_trans eq_equiv).
-  - constructor.
-    + constructor.
-    + apply (sigma_proj1_sym (mat_equiv_equiv 3 3)).
-    + apply (sigma_proj1_trans (mat_equiv_equiv 3 3)).
+  - apply (sigma_proj1_rel_equivalence eq_equivalence).
+  - apply (sigma_proj1_rel_equivalence mat_equiv_equivalence).
   - unfold Morphisms.Proper, Morphisms.respectful.
     intros.
-    unfold versor_equiv, SO3_equiv, sigma_proj1_equiv, proj1_sig in *.
+    unfold versor_equiv, SO3_equiv, sigma_proj1_rel, proj1_sig in *.
     destruct x as [(((a1, b1), c1), d1) E1].
     destruct y as [(((a2, b2), c2), d2) E2].
     by_cell; inversion H; subst; reflexivity.

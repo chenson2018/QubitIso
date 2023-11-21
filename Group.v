@@ -8,79 +8,29 @@ Open Scope group_scope.
 
 (* equivalence relations *)
 
-Lemma eq_equiv {X}: equiv X eq.
-Proof.
-  unfold equiv.
-  unfold transitive, symmetric.
-  repeat split.
-  all: intros; subst; reflexivity.
-Qed.    
-
-Definition sigma_proj1_equiv 
+Definition sigma_proj1_rel
   {X: Type} 
   {A: X -> Prop} 
   {rel: relation X}
-  (e: equiv X rel)
+  (e: Equivalence rel)
   (s1 s2: sig A) 
   : Prop 
 := rel (proj1_sig s1) (proj1_sig s2).
 
-Lemma sigma_proj1_equiv_equiv 
+Lemma sigma_proj1_rel_equivalence
   {X: Type} 
   {A: X -> Prop} 
   {rel: relation X} 
-  (e: equiv X rel)
-  : equiv (sig A) (sigma_proj1_equiv e).
+  (e: Equivalence rel)
+  : Equivalence (@sigma_proj1_rel X A rel e).
 Proof.
-  unfold equiv.
-  destruct e as [R [T S]].
-  unfold reflexive, transitive, symmetric, sigma_proj1_equiv in *.
-  repeat split; intros.
-  - apply R.
-  - apply (T _ _ _ H H0).
-  - apply S. assumption.
-Qed.
-
-(* these are to use with `Add Parametric` *)
-
-Lemma sigma_proj1_refl
-  {X: Type} 
-  {A: X -> Prop} 
-  {rel: relation X} 
-  (e: equiv X rel)
-  : reflexive (sig A) (sigma_proj1_equiv e).
-Proof.
-  assert (H: equiv (sig A) (sigma_proj1_equiv e)).
-  { apply sigma_proj1_equiv_equiv. }
-  destruct H as [r [t s]].
-  assumption.
-Qed.  
-
-Lemma sigma_proj1_sym
-  {X: Type} 
-  {A: X -> Prop} 
-  {rel: relation X} 
-  (e: equiv X rel)
-  : symmetric (sig A) (sigma_proj1_equiv e).
-Proof.
-  assert (H: equiv (sig A) (sigma_proj1_equiv e)).
-  { apply sigma_proj1_equiv_equiv. }
-  destruct H as [r [t s]].
-  assumption.
-Qed.  
-
-Lemma sigma_proj1_trans
-  {X: Type} 
-  {A: X -> Prop} 
-  {rel: relation X} 
-  (e: equiv X rel)
-  : transitive (sig A) (sigma_proj1_equiv e).
-Proof.
-  assert (H: equiv (sig A) (sigma_proj1_equiv e)).
-  { apply sigma_proj1_equiv_equiv. }
-  destruct H as [r [t s]].
-  assumption.
-Qed.
+  destruct e.
+  constructor.
+  all: unfold Reflexive, Symmetric, Transitive, sigma_proj1_rel; intros.
+  - apply Equivalence_Reflexive.
+  - apply Equivalence_Symmetric. assumption.
+  - apply (Equivalence_Transitive _ _ _ H H0).
+Qed.    
 
 (* groups *)
 
@@ -97,7 +47,7 @@ Infix "•=" := Grel (at level 70): group_scope.
 Class Group := {
         id : G
       ; inverse: G -> G
-      ; rel_equiv: equiv G Grel
+      ; rel_equiv: Equivalence Grel
       ; id_left: forall x: G, (id • x) •= x
       ; id_right: forall x: G, (x • id) •= x
       ; assoc: forall x y z: G, (x • y) • z •= x • (y • z)

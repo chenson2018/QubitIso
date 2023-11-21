@@ -60,7 +60,7 @@ Lemma Versor_SO3_hom_mul: forall v1 v2: Versor,
   Versor_to_SO3 (v1 ** v2) *= (Versor_to_SO3 v1) × (Versor_to_SO3 v2).
 Proof.
   intros.
-  unfold SO3_equiv, sigma_proj1_equiv, proj1_sig.
+  unfold SO3_equiv, sigma_proj1_rel, proj1_sig.
   destruct v1 as [(((a1, b1), c1), d1) E1].
   destruct v2 as [(((a2, b2), c2), d2) E2].
   unfold Versor_to_SO3, Vmul, Mmult.
@@ -89,7 +89,7 @@ Qed.
 Lemma Versor_double_covers_SO3: forall v: Versor, Versor_to_SO3 v *= Versor_to_SO3 (Vopp v).
 Proof.
   intros.
-  unfold SO3_equiv, sigma_proj1_equiv, proj1_sig.
+  unfold SO3_equiv, sigma_proj1_rel, proj1_sig.
   destruct v as [(((a1, b1), c1), d1) E1].
   by_cell; lca.
-Qed.  
+Qed.

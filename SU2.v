@@ -68,15 +68,9 @@ Infix "×" := SU2_mul (at level 40, left associativity): SU2_scope.
 (* equivalence relation for the SU2 sigma type *)
 
 Definition SU2_equiv (U1 U2 : SU2) : Prop := 
-  sigma_proj1_equiv (mat_equiv_equiv 2 2) U1 U2.
+  sigma_proj1_rel mat_equiv_equivalence U1 U2.
 Reserved Notation "x *= y" (at level 70).
 Infix "*=" := SU2_equiv: SU2_scope.
-
-Add Parametric Relation : SU2 SU2_equiv
-  reflexivity proved by (sigma_proj1_refl (mat_equiv_equiv 2 2))
-  symmetry proved by (sigma_proj1_sym (mat_equiv_equiv 2 2))
-  transitivity proved by (sigma_proj1_trans (mat_equiv_equiv 2 2))
-as SU2_equiv_rel.
 
 (* matrix inversion in SU(2), carrying proof of closure *)
 
@@ -116,7 +110,7 @@ Defined.
 Lemma SU2_id_left: forall U: SU2, I2 × U *= U.
 Proof.
   intros.
-  unfold SU2_equiv, sigma_proj1_equiv, proj1_sig.
+  unfold SU2_equiv, sigma_proj1_rel, proj1_sig.
   destruct U as [U [WF_U [[gen_a_U gen_b_U] norm_U]]].
   simpl.    
   rewrite Mmult_1_l_mat_eq.
@@ -126,7 +120,7 @@ Qed.
 Lemma SU2_id_right: forall U: SU2, U × I2 *= U.
 Proof.
   intros.
-  unfold SU2_equiv, sigma_proj1_equiv, proj1_sig.
+  unfold SU2_equiv, sigma_proj1_rel, proj1_sig.
   destruct U as [U [WF_U [[gen_a_U gen_b_U] norm_U]]].
   simpl.    
   rewrite Mmult_1_r_mat_eq.
@@ -137,7 +131,7 @@ Lemma SU2_assoc: forall A B C: SU2,
   A × B × C *= A × (B × C).
 Proof.
   intros.
-  unfold SU2_equiv, sigma_proj1_equiv, proj1_sig.
+  unfold SU2_equiv, sigma_proj1_rel, proj1_sig.
   destruct A as [A [WF_A [[gen_a_A gen_b_A] norm_A]]].
   destruct B as [B [WF_B [[gen_a_B gen_b_B] norm_B]]].
   destruct C as [C [WF_C [[gen_a_C gen_b_C] norm_C]]].
@@ -149,7 +143,7 @@ Qed.
 Lemma SU2_right_inv: forall U: SU2, U × (SU2_inv U) *= I2.
 Proof.
   intros.
-  unfold SU2_equiv, sigma_proj1_equiv, proj1_sig.
+  unfold SU2_equiv, sigma_proj1_rel, proj1_sig.
   destruct U as [U [WF_U [[gen_a_U gen_b_U] norm_U]]].
   unfold SU2_inv, SU2_mul.
   simpl.
@@ -162,7 +156,7 @@ Qed.
 #[export] Instance SU2_is_Group : Group SU2 SU2_mul SU2_equiv := {
     id             := I2
   ; inverse        := SU2_inv
-  ; rel_equiv      := sigma_proj1_equiv_equiv (mat_equiv_equiv 2 2)
+  ; rel_equiv      := sigma_proj1_rel_equivalence mat_equiv_equivalence
   ; id_left        := SU2_id_left
   ; id_right       := SU2_id_right
   ; assoc          := SU2_assoc

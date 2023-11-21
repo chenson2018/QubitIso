@@ -36,47 +36,26 @@ Proof.
 Qed.  
 
 (* setoid rewriting, mostly from https://rand.cs.uchicago.edu/vqc/Matrix.html *)
-
-Lemma mat_equiv_refl: forall m n, reflexive (Matrix m n) mat_equiv.
+(*
+Lemma mat_equiv_equivalence: forall m n, Equivalence (@mat_equiv m n).
 Proof.
-  unfold reflexive, mat_equiv.
   intros.
-  reflexivity.
+  constructor.
+  all: unfold Reflexive, Symmetric, Transitive, mat_equiv; intros.
+  - reflexivity.
+  - rewrite H. reflexivity. all: assumption.
+  - rewrite H, H0. reflexivity. all: assumption.
 Qed.
-
-Lemma mat_equiv_sym: forall m n, symmetric (Matrix m n) mat_equiv.
+ *)
+#[global] Instance mat_equiv_equivalence {m n}: Equivalence (@mat_equiv m n).
 Proof.
-  unfold symmetric, mat_equiv.
   intros.
-  rewrite H.
-  reflexivity.
-  all: assumption.
+  constructor.
+  all: unfold Reflexive, Symmetric, Transitive, mat_equiv; intros.
+  - reflexivity.
+  - rewrite H. reflexivity. all: assumption.
+  - rewrite H, H0. reflexivity. all: assumption.
 Qed.
-
-Lemma mat_equiv_trans: forall m n, transitive (Matrix m n) mat_equiv.
-Proof.
-  unfold transitive, mat_equiv.
-  intros.
-  rewrite H.
-  rewrite H0.
-  reflexivity.
-  all: assumption.
-Qed.
-
-Lemma mat_equiv_equiv: forall m n, equiv (Matrix m n) mat_equiv.
-Proof.
-  intros.
-  unfold equiv.
-  repeat split.
-  - apply mat_equiv_trans.
-  - apply mat_equiv_sym.
-Qed.    
-
-Add Parametric Relation m n : (Matrix m n) (@mat_equiv m n)
-  reflexivity proved by (mat_equiv_refl m n)
-  symmetry proved by (mat_equiv_sym m n)
-  transitivity proved by (mat_equiv_trans m n)
-as mat_equiv_rel.
 
 Lemma Csum_eq : forall (f g : nat -> C) (n : nat),
   (forall x, (x < n)%nat -> f x = g x) ->
