@@ -84,15 +84,27 @@ Qed.
 
 (* groups *)
 
-Class Group (G: Type) (op: G -> G -> G) (rel: relation G) := {
+Section groups.
+
+Variables G: Type.
+Variables Gop: G -> G -> G.
+Variable Grel: relation G.
+
+Infix "•=" := Grel (at level 70): group_scope.
+Infix "•" := Gop (at level 40, left associativity): group_scope.
+
+Infix "•=" := Grel (at level 70): group_scope.
+Class Group := {
         id : G
       ; inverse: G -> G
-      ; rel_equiv: equiv G rel
-      ; id_left {x}: rel (op id x) x
-      ; id_right {x}: rel (op x id) x
-      ; assoc {x y z}: rel (op (op x y) z) (op x (op y z))
-      ; right_inv {x}: rel (op x (inverse x)) id
+      ; rel_equiv: equiv G Grel
+      ; id_left: forall x: G, (id • x) •= x
+      ; id_right: forall x: G, (x • id) •= x
+      ; assoc: forall x y z: G, (x • y) • z •= x • (y • z)
+      ; right_inv: forall x: G, x • (inverse x) •= id
 }.
+
+End groups.
 
 Class GroupHomomorphism G H
   (Gop: G -> G -> G) 

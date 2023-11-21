@@ -353,14 +353,14 @@ This was know as early as Euler:
 \end{itemize}
 
 \begin{lstlisting}[language=Coq]
-Class Group (G: Type) (op: G -> G -> G) (rel: relation G) := {
+Class Group := {
         id : G
       ; inverse: G -> G
-      ; rel_equiv: equiv G rel
-      ; id_left {x}: rel (op id x) x
-      ; id_right {x}: rel (op x id) x
-      ; assoc {x y z}: rel (op (op x y) z) (op x (op y z))
-      ; right_inv {x}: rel (op x (inverse x)) id
+      ; rel_equiv: equiv G Grel
+      ; id_left: forall x: G, (id • x) •= x
+      ; id_right: forall x: G, (x • id) •= x
+      ; assoc: forall x y z: G, (x • y) • z •= x • (y • z)
+      ; right_inv: forall x: G, x • (inverse x) •= id
 }.
 \end{lstlisting}
 \end{frame}
