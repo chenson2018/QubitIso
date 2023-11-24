@@ -43,7 +43,6 @@ Variable Grel: relation G.
 Infix "•=" := Grel (at level 70): group_scope.
 Infix "•" := Gop (at level 40, left associativity): group_scope.
 
-Infix "•=" := Grel (at level 70): group_scope.
 Class Group := {
         id : G
       ; inverse: G -> G
