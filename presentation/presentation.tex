@@ -356,7 +356,7 @@ This was know as early as Euler:
 Class Group := {
         id : G
       ; inverse: G -> G
-      ; rel_equiv: equiv G Grel
+      ; rel_equiv: Equivalence Grel
       ; id_left: forall x: G, (id • x) •= x
       ; id_right: forall x: G, (x • id) •= x
       ; assoc: forall x y z: G, (x • y) • z •= x • (y • z)
