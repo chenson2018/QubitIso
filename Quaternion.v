@@ -27,29 +27,30 @@ Reserved Notation "x ** y" (at level 40, left associativity).
 
 (* basic Quaternion operations *)
 
-Definition Qmul (x y: Quaternion): Quaternion :=
-  match x with
-  | (a1, b1, c1, d1) => 
-    match y with 
-    | (a2, b2, c2, d2) => 
-        (a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2, 
-         a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2, 
-         a1 * c2 - b1 * d2 + c1 * a2 + d1 * b2, 
-         a1 * d2 + b1 * c2 - c1 * b2 + d1 * a2)
-    end
-  end.
+Definition Qmul (x y: Quaternion): Quaternion.
+Proof.
+  destruct x as (((a1, b1), c1), d1).
+  destruct y as (((a2, b2), c2), d2).
+  apply
+  (a1 * a2 - b1 * b2 - c1 * c2 - d1 * d2, 
+   a1 * b2 + b1 * a2 + c1 * d2 - d1 * c2, 
+   a1 * c2 - b1 * d2 + c1 * a2 + d1 * b2, 
+   a1 * d2 + b1 * c2 - c1 * b2 + d1 * a2).
+Defined.
 
 Infix "**" := Qmul: Q_scope.
 
-Definition Qnorm (x: Quaternion) : R := 
-  match x with
-  | (a, b, c, d) => sqrt( a^2 + b^2 + c^2 + d^2 )
-  end.
+Definition Qnorm (x: Quaternion) : R.
+Proof.
+  destruct x as (((a, b), c), d).
+  apply (sqrt( a^2 + b^2 + c^2 + d^2 )).
+Defined.
 
-Definition Qconj (x: Quaternion): Quaternion :=
-  match x with
-  | (a, b, c, d) => (a, -b, -c, -d)
-  end.
+Definition Qconj (x: Quaternion): Quaternion.
+Proof.
+  destruct x as (((a, b), c), d).
+  apply (a, -b, -c, -d).
+Defined.
 
 Definition R_to_Q (r: R): Quaternion := (r, 0, 0, 0).
 
