@@ -132,15 +132,12 @@ Lemma Iso_to_Hom_inv:
   GroupIsomorphism  G H Gop Hop Grel Hrel f finv ->
   GroupHomomorphism H G Hop Gop Hrel Grel finv.
 Proof.
-  intros.
-  destruct X.
-  apply Build_GroupHomomorphism; destruct hom0.
+  intros [hom' iso_left_inv' iso_right_inv'].
+  apply Build_GroupHomomorphism
+  ; destruct hom' as [hom_left_group' hom_right_group' hom_mul'].
   - assumption.
   - assumption.
-  - intros.
-    (* for my sanity *)
-    rename a1 into h1.
-    rename a2 into h2.
+  - intros h1 h2.
     assert (G1: exists g1, finv h1 =G g1).
     { exists (finv h1). reflexivity. }
     assert (G2: exists g2, finv h2 =G g2).
@@ -148,13 +145,13 @@ Proof.
     destruct G1 as [g1 G1].
     destruct G2 as [g2 G2].
     assert (H1: f g1 =H h1).
-    { rewrite <- G1. apply iso_right_inv0. }
+    { rewrite <- G1. apply iso_right_inv'. }
     assert (H2: f g2 =H h2).
-    { rewrite <- G2. apply iso_right_inv0. }
+    { rewrite <- G2. apply iso_right_inv'. }
     assert (K: f (g1 *G g2) =H h1 *H h2).
-    { rewrite hom_mul0, H1, H2. reflexivity. }
+    { rewrite hom_mul', H1, H2. reflexivity. }
     rewrite <- K.
-    rewrite iso_left_inv0, G1, G2. 
+    rewrite iso_left_inv', G1, G2. 
     reflexivity.
 Qed.
 
